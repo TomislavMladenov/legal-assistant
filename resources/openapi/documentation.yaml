@@ -1,0 +1,8 @@
+openapi: "3.0.3"
+info:
+  title: "ktor_legal_assistant API"
+  description: "ktor_legal_assistant API"
+  version: "1.0.0"
+servers:
+- url: "https://ktor_legal_assistant"
+paths: {}
