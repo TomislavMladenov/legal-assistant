@@ -1,6 +1,7 @@
 package paralegal.mike.com.usecase
 
 import com.aallam.openai.api.BetaOpenAI
+import com.aallam.openai.api.assistant.AssistantId
 import com.aallam.openai.api.core.Role
 import com.aallam.openai.api.core.Status
 import com.aallam.openai.api.message.MessageContent
@@ -8,13 +9,10 @@ import com.aallam.openai.api.message.MessageRequest
 import com.aallam.openai.api.run.RunRequest
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.delay
-import org.apache.pdfbox.pdmodel.PDDocument
-import org.apache.pdfbox.text.PDFTextStripper
-import paralegal.mike.com.MikeParalegal
 import java.io.File
 
 @OptIn(BetaOpenAI::class)
-suspend fun ndaWithFileUseCase(
+suspend fun summarize(
     openAI: OpenAI,
     content: String,
     instructions: String,
@@ -36,12 +34,12 @@ suspend fun ndaWithFileUseCase(
         )
     )
 
-    val assistant = requireNotNull(MikeParalegal.ndaAssistant)
+    val assistant = openAI.assistant(id = AssistantId("asst_dPg7F6mFrW4djEUPWseSU91q"))
 
     // 4. Run the assistant
     val run = openAI.createRun(
         thread.id, request = RunRequest(
-            assistantId = assistant.id,
+            assistantId = assistant?.id ?: AssistantId(""),
             instructions = instructions
         )
     )
@@ -65,24 +63,4 @@ suspend fun ndaWithFileUseCase(
         callBack(textContent.text.value)
     }
 
-
-}
-
-fun getTextFromDocument(file: File): String {
-    //Loading an existing document
-    val document: PDDocument = PDDocument.load(file)
-
-//Instantiate PDFTextStripper class
-    val pdfStripper: PDFTextStripper = PDFTextStripper()
-
-//Retrieving text from PDF document
-    val text: String = pdfStripper.getText(document)
-    println(text)
-
-//Closing the document
-    document.close()
-
-    file.delete()
-
-    return text
 }

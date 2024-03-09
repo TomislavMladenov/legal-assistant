@@ -12,7 +12,7 @@ import paralegal.mike.com.model.PreDefined
 import paralegal.mike.com.usecase.humanRightsUseCase
 import paralegal.mike.com.usecase.ndaUseCase
 import paralegal.mike.com.usecase.ndaWithFileUseCase
-import paralegal.mike.com.usecase.uploadFile
+import paralegal.mike.com.usecase.summarize
 import java.io.File
 
 
@@ -51,8 +51,6 @@ fun Application.configureRouting() {
             var instructions = ""
             var fileName = ""
 
-//            var file: File? = null
-
             val multipartData = call.receiveMultipart()
 
             multipartData.forEachPart { part ->
@@ -90,7 +88,45 @@ fun Application.configureRouting() {
     }
 
     routing {
+        post("/summarize") {
+            var content = ""
+            var instructions = ""
+            var fileName = ""
 
+            val multipartData = call.receiveMultipart()
+
+            multipartData.forEachPart { part ->
+                when (part) {
+                    is PartData.FormItem -> {
+                        if ((part.name ?: "") == "content") {
+                            content = part.value
+                        }
+
+                        if ((part.name ?: "") == "instructions") {
+                            instructions = part.value
+                        }
+                    }
+
+                    is PartData.FileItem -> {
+                        fileName = part.originalFileName as String
+                        val fileBytes = part.streamProvider().readBytes()
+                        val file = File("src/main/resources/$fileName").also {
+                            it.writeBytes(fileBytes)
+                        }
+
+                        summarize(MikeParalegal.openAI, content, instructions, file) {
+                            call.respondText(it)
+                        }
+                    }
+
+                    else -> {
+                        call.respondText("Not supported operation")
+                    }
+                }
+                part.dispose()
+            }
+
+        }
     }
 
 }
