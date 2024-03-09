@@ -22,6 +22,7 @@ suspend fun humanRightsUseCase(
     instructions: String,
     callBack: suspend (String) -> Unit
 ) {
+    println("Content: $content, instructions: $instructions")
 
     // 1. Upload a file with an "assistants" purpose
     val fileUpload = FileUpload(file = FileSource("udhr.pdf".toPath(), FileSystem.RESOURCES), purpose = Purpose("assistants"))

@@ -13,6 +13,5 @@ fun main() {
 fun Application.module() {
     configureHTTP()
     configureMonitoring()
-    configureSerialization()
     configureRouting()
 }
