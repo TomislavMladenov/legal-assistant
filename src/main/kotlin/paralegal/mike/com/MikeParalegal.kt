@@ -1,5 +1,8 @@
 package paralegal.mike.com
 
+import com.aallam.openai.api.BetaOpenAI
+import com.aallam.openai.api.assistant.Assistant
+import com.aallam.openai.api.assistant.AssistantId
 import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.logging.LogLevel
 import com.aallam.openai.client.LoggingConfig
@@ -8,9 +11,10 @@ import java.io.File
 import java.util.*
 import kotlin.time.Duration.Companion.seconds
 
+@OptIn(BetaOpenAI::class)
 object MikeParalegal {
 
-    val apiKey: String by lazy {
+    private val apiKey: String by lazy {
         val properties = Properties()
         // Adjust the file path to be relative to the current working directory
         val relativePath = "legal-assistant/local.properties" // Adjusted relative path
@@ -23,5 +27,18 @@ object MikeParalegal {
         properties.getProperty("openai.apikey") ?: throw IllegalStateException("OPENAI_API_KEY must be set in local.properties.")
     }
 
-    val openAI = OpenAI(token = apiKey, logging = LoggingConfig(LogLevel.All))
+    val openAI = OpenAI(token = "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", logging = LoggingConfig(LogLevel.All), timeout = Timeout(socket = 60.seconds))
+
+    var ndaAssistant: Assistant? = null
+    var humanRightsAssistant: Assistant? = null
+
+    suspend fun buildNdaAssistant() {
+        ndaAssistant = openAI.assistant(id = AssistantId("asst_0nKBIzMaBrf49L4LbXY5PYLS"),)
+    }
+
+    suspend fun buildHumanRightsAssistant() {
+        humanRightsAssistant = openAI.assistant(id = AssistantId("asst_NXtag8UEIe85Ct1cx17UNAAa"))
+    }
+
+    var fileIdToAnalyse: String = ""
 }

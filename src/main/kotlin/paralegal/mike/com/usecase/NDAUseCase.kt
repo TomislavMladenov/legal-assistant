@@ -1,8 +1,11 @@
 package paralegal.mike.com.usecase
 
 import com.aallam.openai.api.BetaOpenAI
+import com.aallam.openai.api.assistant.Assistant
+import com.aallam.openai.api.assistant.AssistantId
 import com.aallam.openai.api.core.Role
 import com.aallam.openai.api.core.Status
+import com.aallam.openai.api.file.FileId
 import com.aallam.openai.api.file.FileSource
 import com.aallam.openai.api.file.FileUpload
 import com.aallam.openai.api.file.Purpose
@@ -16,11 +19,12 @@ import okio.Path.Companion.toPath
 import paralegal.mike.com.MikeParalegal
 
 @OptIn(BetaOpenAI::class)
-suspend fun humanRightsUseCase(
+suspend fun ndaUseCase(
     openAI: OpenAI,
     content: String,
     callBack: suspend (String) -> Unit
-) {
+)  {
+    println("Content: $content,")
 
     // 2. Create a thread
     val thread = openAI.thread()
@@ -33,12 +37,12 @@ suspend fun humanRightsUseCase(
         )
     )
 
-    val assistant = requireNotNull(MikeParalegal.humanRightsAssistant)
+    val assistant = requireNotNull(MikeParalegal.ndaAssistant)
 
     // 4. Run the assistant
     val run = openAI.createRun(
         thread.id, request = RunRequest(
-            assistantId = assistant.id,
+            assistantId = assistant.id ?: AssistantId("not-found"),
         )
     )
 

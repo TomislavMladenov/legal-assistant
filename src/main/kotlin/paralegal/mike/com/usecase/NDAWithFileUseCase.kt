@@ -3,24 +3,40 @@ package paralegal.mike.com.usecase
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.core.Role
 import com.aallam.openai.api.core.Status
-import com.aallam.openai.api.file.FileSource
-import com.aallam.openai.api.file.FileUpload
-import com.aallam.openai.api.file.Purpose
 import com.aallam.openai.api.message.MessageContent
 import com.aallam.openai.api.message.MessageRequest
 import com.aallam.openai.api.run.RunRequest
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.delay
-import okio.FileSystem
-import okio.Path.Companion.toPath
+import org.apache.pdfbox.pdmodel.PDDocument
+import org.apache.pdfbox.text.PDFTextStripper
 import paralegal.mike.com.MikeParalegal
+import java.io.File
 
 @OptIn(BetaOpenAI::class)
-suspend fun humanRightsUseCase(
+suspend fun ndaWithFileUseCase(
     openAI: OpenAI,
     content: String,
+    instructions: String,
+    file: File,
     callBack: suspend (String) -> Unit
 ) {
+    println("Content: $content, instructions: $instructions")
+
+    //Loading an existing document
+    val document: PDDocument = PDDocument.load(file)
+
+    //Instantiate PDFTextStripper class
+    val pdfStripper: PDFTextStripper = PDFTextStripper()
+
+    //Retrieving text from PDF document
+    val text: String = pdfStripper.getText(document)
+    println(text)
+
+    //Closing the document
+    document.close()
+
+    file.delete()
 
     // 2. Create a thread
     val thread = openAI.thread()
@@ -29,16 +45,17 @@ suspend fun humanRightsUseCase(
     openAI.message(
         threadId = thread.id, request = MessageRequest(
             role = Role.User,
-            content = content
+            content = text
         )
     )
 
-    val assistant = requireNotNull(MikeParalegal.humanRightsAssistant)
+    val assistant = requireNotNull(MikeParalegal.ndaAssistant)
 
     // 4. Run the assistant
     val run = openAI.createRun(
         thread.id, request = RunRequest(
             assistantId = assistant.id,
+            instructions = instructions
         )
     )
 
@@ -60,4 +77,5 @@ suspend fun humanRightsUseCase(
         println(textContent.text.value)
         callBack(textContent.text.value)
     }
+
 }

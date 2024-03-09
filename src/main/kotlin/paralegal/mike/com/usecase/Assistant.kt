@@ -9,7 +9,7 @@ import com.aallam.openai.client.OpenAI
 
 
 @OptIn(BetaOpenAI::class)
-suspend infix fun OpenAI.buildHumanRightsDefender(knowledgeBaseId: FileId): AssistantRequest {
+infix fun OpenAI.buildHumanRightsDefender(knowledgeBaseId: FileId): AssistantRequest {
     return AssistantRequest(
         name = "Human Rights Bot",
         instructions = "You are a chatbot specialized in 'The Universal Declaration of Human Rights.' Answer questions and provide information based on this document.",
@@ -23,7 +23,7 @@ suspend infix fun OpenAI.buildHumanRightsDefender(knowledgeBaseId: FileId): Assi
 }
 
 @OptIn(BetaOpenAI::class)
-fun ndaAnalyzer(knowledgeBaseId: FileId): AssistantRequest {
+infix fun OpenAI.buildNdaAnalyser(knowledgeBaseId: FileId): AssistantRequest {
     //TODO add file to learn from and feed data
     return AssistantRequest(
         name = "NDA Assistant",

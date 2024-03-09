@@ -1,6 +1,6 @@
 package paralegal.mike.com.plugins
 
-import io.ktor.client.plugins.*
+import io.ktor.http.content.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
@@ -10,6 +10,10 @@ import io.ktor.server.routing.*
 import paralegal.mike.com.MikeParalegal
 import paralegal.mike.com.model.PreDefined
 import paralegal.mike.com.usecase.humanRightsUseCase
+import paralegal.mike.com.usecase.ndaUseCase
+import paralegal.mike.com.usecase.ndaWithFileUseCase
+import paralegal.mike.com.usecase.uploadFile
+import java.io.File
 
 
 fun Application.configureRouting() {
@@ -26,9 +30,67 @@ fun Application.configureRouting() {
     routing {
         post("/defend") {
             val body = call.receive<PreDefined>()
-            humanRightsUseCase(MikeParalegal.openAI, body.content, body.instructions) {
+            humanRightsUseCase(MikeParalegal.openAI, body.content) {
                 call.respond(it)
             }
         }
     }
+
+    routing {
+        post("/nda") {
+            val body = call.receive<PreDefined>()
+            ndaUseCase(MikeParalegal.openAI, body.content) {
+                call.respond(it)
+            }
+        }
+    }
+
+    routing {
+        post("/upload") {
+            var content = ""
+            var instructions = ""
+            var fileName = ""
+
+//            var file: File? = null
+
+            val multipartData = call.receiveMultipart()
+
+            multipartData.forEachPart { part ->
+                when (part) {
+                    is PartData.FormItem -> {
+                        if ((part.name ?: "") == "content") {
+                            content = part.value
+                        }
+
+                        if ((part.name ?: "") == "instructions") {
+                            instructions = part.value
+                        }
+                    }
+
+                    is PartData.FileItem -> {
+                        fileName = part.originalFileName as String
+                        val fileBytes = part.streamProvider().readBytes()
+                        val file = File("src/main/resources/$fileName").also {
+                            it.writeBytes(fileBytes)
+                        }
+
+                        ndaWithFileUseCase(MikeParalegal.openAI, content, instructions, file) {
+                            call.respondText(it)
+                        }
+                    }
+
+                    else -> {
+                        call.respondText("Not supported operation")
+                    }
+                }
+                part.dispose()
+            }
+
+        }
+    }
+
+    routing {
+
+    }
+
 }

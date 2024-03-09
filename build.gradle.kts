@@ -33,6 +33,8 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
+    implementation("org.apache.pdfbox:pdfbox:2.0.30")
+
     // Import Kotlin API client BOM
     implementation(platform("com.aallam.ktoken:ktoken-bom:0.3.0"))
     // Define dependencies without versions
