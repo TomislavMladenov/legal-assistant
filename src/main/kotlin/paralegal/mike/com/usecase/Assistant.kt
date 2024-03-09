@@ -14,7 +14,10 @@ suspend infix fun OpenAI.buildHumanRightsDefender(knowledgeBaseId: FileId): Assi
         name = "Human Rights Bot",
         instructions = "You are a chatbot specialized in 'The Universal Declaration of Human Rights.' Answer questions and provide information based on this document.",
         tools = listOf(AssistantTool.RetrievalTool),
+//        model = ModelId("gpt-4-0125-preview"),
+//        model = ModelId("gpt-3.5-turbo-1106"),
         model = ModelId("gpt-4-1106-preview"),
+//        model = ModelId("gpt-4-vision-preview"),
         fileIds = listOf(knowledgeBaseId)
     )
 }

@@ -53,7 +53,7 @@ suspend fun humanRightsUseCase(
 
     // 5. Check the run status every 1.5 sec
     do {
-        delay(1500)
+        delay(3000)
         val retrievedRun = openAI.getRun(threadId = thread.id, runId = run.id)
     } while (retrievedRun.status != Status.Completed)
 
