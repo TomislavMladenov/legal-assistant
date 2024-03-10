@@ -46,7 +46,7 @@ fun Application.configureRouting() {
     }
 
     routing {
-        post("/upload") {
+        post("/analyze") {
             var content = ""
             var instructions = ""
             var fileName = ""

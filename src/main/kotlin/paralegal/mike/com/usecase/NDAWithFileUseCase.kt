@@ -72,14 +72,14 @@ fun getTextFromDocument(file: File): String {
     //Loading an existing document
     val document: PDDocument = PDDocument.load(file)
 
-//Instantiate PDFTextStripper class
+    //Instantiate PDFTextStripper class
     val pdfStripper: PDFTextStripper = PDFTextStripper()
 
-//Retrieving text from PDF document
+    //Retrieving text from PDF document
     val text: String = pdfStripper.getText(document)
     println(text)
 
-//Closing the document
+    //Closing the document
     document.close()
 
     file.delete()

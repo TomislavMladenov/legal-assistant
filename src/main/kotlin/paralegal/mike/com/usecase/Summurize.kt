@@ -34,7 +34,8 @@ suspend fun summarize(
         )
     )
 
-    val assistant = openAI.assistant(id = AssistantId("asst_dPg7F6mFrW4djEUPWseSU91q"))
+//    val assistant = openAI.assistant(id = AssistantId("asst_dPg7F6mFrW4djEUPWseSU91q"))
+    val assistant = openAI.assistant(id = AssistantId("asst_0nKBIzMaBrf49L4LbXY5PYLS"))
 
     // 4. Run the assistant
     val run = openAI.createRun(

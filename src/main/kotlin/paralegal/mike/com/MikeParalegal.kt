@@ -27,11 +27,10 @@ object MikeParalegal {
         properties.getProperty("openai.apikey") ?: throw IllegalStateException("OPENAI_API_KEY must be set in local.properties.")
     }
 
-    val openAI = OpenAI(token = "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", logging = LoggingConfig(LogLevel.All), timeout = Timeout(socket = 60.seconds))
+    val openAI = OpenAI(token = "", logging = LoggingConfig(LogLevel.All), timeout = Timeout(socket = 60.seconds))
 
     var ndaAssistant: Assistant? = null
     var humanRightsAssistant: Assistant? = null
-    var legalAssistant: Assistant? = null
 
     suspend fun buildNdaAssistant() {
         ndaAssistant = openAI.assistant(id = AssistantId("asst_0nKBIzMaBrf49L4LbXY5PYLS"),)
